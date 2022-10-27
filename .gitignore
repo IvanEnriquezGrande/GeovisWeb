@@ -1,0 +1,7 @@
+Lib/*
+Scripts/*
+src/__pycache__/*
+src/website/__pycache__/*
+src/website/web/*
+
+pyvenv.cfg
