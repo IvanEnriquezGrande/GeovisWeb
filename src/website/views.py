@@ -1,13 +1,12 @@
 from importlib.resources import path
-from pathlib import Path
 from flask import Blueprint, render_template, request, current_app, flash, url_for, redirect
+from werkzeug.utils import secure_filename
 import os
 
 views = Blueprint("views", __name__)
 
-archivos = []
-archivo_shp = ""
-ruta = "../uploads/test1/"
+archivos = []           #archivos guardados del sumit
+archivo_shp = ""        #ruta del shp
 
 def allowed_extensions(file):
     file= file.upper()
@@ -19,23 +18,19 @@ def allowed_extensions(file):
     return True
 
 def archivos_obligatorios():
-    extenciones = []
-    for archivo in archivos:
-        extenciones.append(archivo.rsplit(".",1)[1])
-    print(extenciones)
+    extensiones = [archivo.rsplit(".",1)[1] for archivo in archivos]    
+    print(extensiones)    
     
-    archivos_f = ""
+    if "shp" not in extensiones:
+        return "Se necesita un archivo con extension .shp"
     
-    if "shp" not in extenciones:
-        archivos_f = "Se necesita un archivo con extension .shp"
+    elif "shx" not in extensiones:
+        return "Se necesita un archivo con extension .shx"
     
-    elif "shx" not in extenciones:
-        archivos_f = "Se necesita un archivo con extension .shx"
-    
-    elif "dbf" not in extenciones:
-        archivos_f = "Se necesita un archivo con extension .dbf"
- 
-    return archivos_f    
+    elif "dbf" not in extensiones:
+        return "Se necesita un archivo con extension .dbf"
+
+    return ""
         
 
 @views.route('/')
@@ -48,27 +43,30 @@ def quienes_somos():
 
 @views.route('/upload_file', methods=["GET", "POST"])
 def upload_file():
-    global archivo_shp
-    global ruta
+    global archivo_shp    
     
     if request.method == 'POST':
         f=request.files.getlist("files2")
-        for file in f:
-            print(file.filename)
-            #prueba = str(file.filename)
-            if(allowed_extensions(file.filename)):
-                if(str(file.filename).rfind(".shp") != -1):
-                    archivo_shp = str(file.filename)
-                    ruta = ruta + archivo_shp
-                    
-                file.save(os.path.join(current_app.config['UPLOAD_PATH'], str(file.filename)))
+        for file in f:                       
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)            
+            
+            if file and allowed_extensions(file.filename):
+                if(str(file.filename).rfind(".shp") != -1):                    
+                    archivo_shp = os.path.join(current_app.config['UPLOAD_PATH'], str(file.filename))                        
+                # secure_filename previene que el usuario suba un archivo cuyo nombre 
+                # sea una ruta relativa y sobreescriba un archivo importante
+                filename = secure_filename(str(file.filename))    
+                file.save(os.path.join(current_app.config['UPLOAD_PATH'], filename))
                 archivos.append(file.filename)
+            else:
+                print("Archivo no permitido: {}".format(file.filename))
                 
         archivo_faltante = archivos_obligatorios()
         
         if(archivo_faltante != ""):
             flash(archivo_faltante)
-
         else:
             return redirect(url_for('views.crear_mapa_success'))
 
@@ -76,4 +74,4 @@ def upload_file():
 
 @views.route('/crear_mapa_success')
 def crear_mapa_success():
-    return render_template('/crear_mapa_success.html')
+    return render_template('/crear_mapa_success.html')         
