@@ -2,11 +2,13 @@ from importlib.resources import path
 from flask import Blueprint, render_template, request, current_app, flash, url_for, redirect
 from werkzeug.utils import secure_filename
 import os
+from .generador_mapas import GeneradorMapas
 
 views = Blueprint("views", __name__)
 
 archivos = []           #archivos guardados del sumit
 archivo_shp = ""        #ruta del shp
+ruta_templates = ".\\website\\templates"
 
 def allowed_extensions(file):
     file= file.upper()
@@ -29,6 +31,9 @@ def archivos_obligatorios():
     
     elif "dbf" not in extensiones:
         return "Se necesita un archivo con extension .dbf"
+    
+    elif "prj" not in extensiones:
+        return "Se necesita un archivo con extension .prj"
 
     return ""
         
@@ -72,6 +77,28 @@ def upload_file():
 
     return render_template('/crear_mapa.html')
 
-@views.route('/crear_mapa_success')
+@views.route('/crear_mapa_success', methods=["GET", "POST"])
 def crear_mapa_success():
+    if request.method == 'POST':
+        if request.form.get('action1') == 'VALUE1':
+            print(archivo_shp)
+            global ruta_templates
+            generador = GeneradorMapas()
+            datos = generador.obtener_datos(archivo_shp)
+            colores = generador.obtener_nombres_colores()
+            estilo_tiles = generador.obtener_estilo_tiles()
+
+            mapa = generador.generar_mapa(datos)
+            if mapa != None:
+                generador.guardar_mapa(ruta_templates, "mapa1", mapa)
+                return redirect(url_for('views.mapa'))
+            else:
+                #Mensaje de error
+                pass
+            
     return render_template('/crear_mapa_success.html')         
+
+
+@views.route('/mapa')
+def mapa():
+    return render_template('/mapa1.html')
