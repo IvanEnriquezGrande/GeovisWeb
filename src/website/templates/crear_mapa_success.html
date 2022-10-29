@@ -35,35 +35,23 @@
         </nav>
         <div class="grid-layout3">
             <div class="cont8">
-                <h2>Ingresa tus archivos</h2>
+                <h2>Listo para crear mapa ( ͡° ͜ʖ ͡°)</h2>
             </div>
             <div class="cont9">
-                {% for message in get_flashed_messages()%}
-                <div class="alert alert-dismissible alert-danger">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <strong>Oh snap!</strong> {{message}}
-                  </div>
-                {% endfor %}
+                
             </div>
             <div class="cont10">
 
-                <form action="/upload_file" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="formFile" class="form-label mt-4">Ingresa tus archivos</label>
-                        <input class="form-control" type="file" id="formFile" name="files2" multiple="true">
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-lg btn-primary" type="submit">Submit</button>
-                    </div>
-                </form>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-lg btn-primary" type="submit">Crear mapa</button>
+                </div>
                 
             </div>
             <div class="cont11">
-                <div class="alert alert-dismissible alert-warning">
+                <div class="alert alert-dismissible alert-success">
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <h4 class="alert-heading">Alerta!</h4>
-                    <p class="mb-0">Debes subir tres archivos con las extenciones .shp .shx y .dbf.</p>
-                  </div>
+                    <strong>Archivos validados!</strong> Da click en crear mapa para poder visualizarlo
+                </div>
             </div>
         </div>
     </body>

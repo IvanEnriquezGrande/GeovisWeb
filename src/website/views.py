@@ -1,13 +1,13 @@
 from importlib.resources import path
 from pathlib import Path
-from flask import Blueprint, render_template, request, current_app
+from flask import Blueprint, render_template, request, current_app, flash, url_for, redirect
 import os
 
 views = Blueprint("views", __name__)
 
 archivos = []
 archivo_shp = ""
-ruta = "/uploads/test1/"
+ruta = "../uploads/test1/"
 
 def allowed_extensions(file):
     file= file.upper()
@@ -24,16 +24,18 @@ def archivos_obligatorios():
         extenciones.append(archivo.rsplit(".",1)[1])
     print(extenciones)
     
+    archivos_f = ""
+    
     if "shp" not in extenciones:
-        return "Se necesita un archivo con extension .shp"
+        archivos_f = "Se necesita un archivo con extension .shp"
     
     elif "shx" not in extenciones:
-        return "Se necesita un archivo con extension .shx"
+        archivos_f = "Se necesita un archivo con extension .shx"
     
     elif "dbf" not in extenciones:
-        return "Se necesita un archivo con extension .dbf"
-
-    return ""    
+        archivos_f = "Se necesita un archivo con extension .dbf"
+ 
+    return archivos_f    
         
 
 @views.route('/')
@@ -48,6 +50,7 @@ def quienes_somos():
 def upload_file():
     global archivo_shp
     global ruta
+    
     if request.method == 'POST':
         f=request.files.getlist("files2")
         for file in f:
@@ -64,9 +67,13 @@ def upload_file():
         archivo_faltante = archivos_obligatorios()
         
         if(archivo_faltante != ""):
-            print(archivo_faltante)
-        
-        if(os.path.exists(ruta)):
-            print(ruta)
+            flash(archivo_faltante)
+
+        else:
+            return redirect(url_for('views.crear_mapa_success'))
 
     return render_template('/crear_mapa.html')
+
+@views.route('/crear_mapa_success')
+def crear_mapa_success():
+    return render_template('/crear_mapa_success.html')
