@@ -1,13 +1,13 @@
 from flask import Blueprint, render_template, request, current_app, flash, url_for, redirect
 from werkzeug.utils import secure_filename
 import os
-from shutil import rmtree
 from .generador_mapas import GeneradorMapas
 
 views = Blueprint("views", __name__)
 
 archivos = []           #archivos guardados del sumit
-archivo_shp = ""        #ruta del shp
+archivo_shp = ""        #nombre del shp
+ruta_shp = ""           #ubicacion del shp
 ruta_templates = ".\\website\\templates"
 
 def borrar_Archivos():
@@ -71,6 +71,7 @@ def quienes_somos():
 @views.route('/upload_file', methods=["GET", "POST"])
 def upload_file():
     global archivo_shp
+    global ruta_shp
     global archivos
     global ruta_templates    
     
@@ -90,7 +91,8 @@ def upload_file():
             if file and allowed_extensions(file.filename):
                 #buscar archivo con extension .shp
                 if(str(file.filename).endswith(".shp")):                    
-                    archivo_shp = os.path.join(current_app.config['UPLOAD_PATH'], str(file.filename))                        
+                    archivo_shp = str(file.filename)
+                    ruta_shp = os.path.join(current_app.config['UPLOAD_PATH'], archivo_shp)                        
                 # secure_filename previene que el usuario suba un archivo cuyo nombre 
                 # sea una ruta relativa y sobreescriba un archivo importante
                 filename = secure_filename(str(file.filename))    
@@ -118,33 +120,33 @@ def crear_mapa_success():
     o mostrar una pagina de error si la geometria no es válida
     """
     global ruta_templates
-
+    global mapa
     if request.method == 'POST':
         if request.form.get('action1') == 'VALUE1':
-            print(archivo_shp)
-            generador = GeneradorMapas()
-            datos = generador.obtener_datos(archivo_shp)
-            colores = generador.obtener_nombres_colores()
-            estilo_tiles = generador.obtener_estilo_tiles()
-
-            mapa = generador.generar_mapa(datos)
-            if mapa != None:
-                generador.guardar_mapa(ruta_templates, "mapa1", mapa)
-                return redirect(url_for(f'views.mapa'))
-            else:                
-                return render_template("error_geometria.html")                
+            print(ruta_shp)
+            return redirect(url_for('views.mapa'))
             
     return render_template('/crear_mapa_success.html')         
 
 
 @views.route('/mapa')
 def mapa():
-    global archivos
-    borrar_Archivos()
-    return render_template('/mapa1.html')
+    generador = GeneradorMapas()
+    datos = generador.obtener_datos(ruta_shp)
+    colores = generador.obtener_nombres_colores()
+    estilo_tiles = generador.obtener_estilo_tiles()
+
+    mapa = generador.generar_mapa(datos)
+    if mapa != None:
+        borrar_Archivos()
+        
+        #generador.guardar_mapa(ruta_templates, "mapa1", mapa)
+        return mapa._repr_html_()
+    else:                
+        return redirect(url_for('views.error_geometria'))    
+    
 
 @views.route('/error')
 def error_geometria():
-    global archivos
     borrar_Archivos()
     return render_template("error_geometria.html") 
