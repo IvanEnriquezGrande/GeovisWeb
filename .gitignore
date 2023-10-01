@@ -3,5 +3,6 @@ Scripts/*
 src/__pycache__/*
 src/website/__pycache__/*
 src/website/web/*
+.idea/
 
 pyvenv.cfg

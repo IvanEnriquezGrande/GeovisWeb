@@ -4,7 +4,7 @@ para crear mapas interactivos (folium.Map) a partir de
 archivos shp y todos los archivos complementarios.
 """
 
-from typing import Optional, Union
+from typing import Optional, Union, Any
 import geopandas as gpd
 import folium
 
@@ -12,7 +12,7 @@ import folium
 class GeneradorMapas:
     """
     La clase GeneradorMapas tiene como atributos todos
-    los valores necesarios para ejecutar la lectura, 
+    los valores necesarios para ejecutar la lectura,
     operación y transformación de archivos SHP para
     convertirlos en un mapa interactivo (folium.Map)
     """
@@ -32,77 +32,84 @@ class GeneradorMapas:
         self._zoom_inicial = 7
 
         # Opciones de tiles para mostrar en el mapa
-        self._estilo_tiles = {"open_street_map": "OpenStreetMap",
-                              "carto_db_light": "CartoDB positron",
-                              "carto_db_dark": "CartoDB dark_matter"}
+        self._estilo_tiles = {
+            "open_street_map": "OpenStreetMap",
+            "carto_db_light": "CartoDB positron",
+            "carto_db_dark": "CartoDB dark_matter",
+        }
 
         self._params_glob = {
             "zoom_inicial": self._zoom_inicial,
-            "estilo_tiles": self._estilo_tiles["carto_db_light"]
+            "estilo_tiles": self._estilo_tiles["carto_db_light"],
         }
 
         self._tipo_geometria = {
             "puntos": "Point",
             "lineas": "LineString",
             "poligonos": "Polygon",
-            "multi_poligonos": "MultiPolygon"
+            "multi_poligonos": "MultiPolygon",
         }
 
         # Parámetros puntos
-        self._color = {'lightgray': 'lightgray',
-                       'blue': 'blue',
-                       'darkred': 'darkred',
-                       'black': 'black',
-                       'lightred': 'lightred',
-                       'darkgreen': 'darkgreen',
-                       'red': 'red',
-                       'orange': 'orange',
-                       'white': 'white',
-                       'beige': 'beige',
-                       'darkpurple': 'darkpurple',
-                       'darkblue': 'darkblue',
-                       'purple': 'purple',
-                       'cadetblue': 'cadetblue',
-                       'lightgreen': 'lightgreen',
-                       'pink': 'pink',
-                       'gray': 'gray',
-                       'green': 'green',
-                       'lightblue': 'lightblue'}
+        self._color = {
+            "lightgray": "lightgray",
+            "blue": "blue",
+            "darkred": "darkred",
+            "black": "black",
+            "lightred": "lightred",
+            "darkgreen": "darkgreen",
+            "red": "red",
+            "orange": "orange",
+            "white": "white",
+            "beige": "beige",
+            "darkpurple": "darkpurple",
+            "darkblue": "darkblue",
+            "purple": "purple",
+            "cadetblue": "cadetblue",
+            "lightgreen": "lightgreen",
+            "pink": "pink",
+            "gray": "gray",
+            "green": "green",
+            "lightblue": "lightblue",
+        }
 
         self._params_puntos = {"color": self._color["lightred"]}
 
         # Parámetros líneas
         self._params_lineas = {
             "color_linea": "#00FF00",  # Puede ser un valor hexadecimal o el nombre de color válido
-            "ancho_linea": 3
+            "ancho_linea": 3,
         }
 
         # Parámetros polígonos
         # Puede ser un valor hexadecimal o el nombre de color válido
         self._params_poligonos = {
             "color_relleno": "#00FF00",  # hexadecimal
-            "color_borde": "green"  # nombre del color
+            "color_borde": "green",  # nombre del color
         }
 
     def obtener_datos(self, ruta: str) -> gpd.GeoDataFrame:
         """
-        obtener_datos lee el archivo especificado en 
+        obtener_datos lee el archivo especificado en
         ruta y devuelve el GeoDataFrame obtenido
         """
 
+        print("Leyendo archivo")
         datos = gpd.read_file(ruta)  # Leer archivo
         datos = datos.to_crs(epsg=self._CRS)  # Convertir datos a CRS 6365
+        print("Lectura de archivo finalizada")
 
         return datos
 
-    def generar_mensajes(self, datos: gpd.GeoDataFrame) -> list[str]:
+    @staticmethod
+    def generar_mensajes(datos: gpd.GeoDataFrame) -> list[str]:
         """
         generar_mensajes crea una lista de mensajes,
-        cada mensaje se compone del contenido de las 
+        cada mensaje se compone del contenido de las
         columnas del GeoDataFrame
         """
 
-        # Seleccionar todas las columnas excepto  geometry
+        # Seleccionar todas las columnas excepto geometry
         cols = [col for col in datos.columns if col not in ["geometry"]]
         datos_mensaje = datos[cols]
 
@@ -123,8 +130,8 @@ class GeneradorMapas:
         determinar_geometria especifica a qué tipo de geometría pertenecen nuestros datos.
 
         geometria: Lista del tipo de geometría de cada fila de datos
-        geometria.count(self._tipo_geometria[]): Cuenta los elementos que son del tipo de 
-                                            geometría deseado (puntos, linea, poligono)
+        geometria.count(self._tipo_geometria[]): Cuenta los elementos que son del tipo de
+                                            geometría deseado (puntos, línea, polígono)
         len(geometria): Longitud de la lista
 
         Si todos los elementos de los datos son de un mismo tipo de geometría válido podemos trabajar con ellos.
@@ -133,15 +140,25 @@ class GeneradorMapas:
 
         # Geometría de cada registro de datos
         geometria = list(datos.geometry.type)
-        geometria_datos = ""
 
-        if geometria.count(self._tipo_geometria["puntos"]) == len(geometria) and geometria:
+        if (
+            geometria.count(self._tipo_geometria["puntos"]) == len(geometria)
+            and geometria
+        ):
             geometria_datos = self._tipo_geometria["puntos"]
 
-        elif geometria.count(self._tipo_geometria["lineas"]) == len(geometria) and geometria:
+        elif (
+            geometria.count(self._tipo_geometria["lineas"]) == len(geometria)
+            and geometria
+        ):
             geometria_datos = self._tipo_geometria["lineas"]
 
-        elif geometria.count(self._tipo_geometria["poligonos"]) + geometria.count(self._tipo_geometria["multi_poligonos"]) == len(geometria) and geometria:
+        elif (
+            geometria.count(self._tipo_geometria["poligonos"])
+            + geometria.count(self._tipo_geometria["multi_poligonos"])
+            == len(geometria)
+            and geometria
+        ):
             geometria_datos = self._tipo_geometria["poligonos"]
 
         else:
@@ -149,22 +166,29 @@ class GeneradorMapas:
 
         return geometria_datos
 
-    def crear_mapa_folium(self, latitud: float, longitud: float, params_glob: dict) -> folium.Map:
+    @staticmethod
+    def crear_mapa_folium(
+        latitud: float, longitud: float, params_glob: dict
+    ) -> folium.Map:
         """
-        Crea un folium.Map centrado en la latitud y longitud especificadas 
+        Crea un folium.Map centrado en la latitud y longitud especificadas
         y con los parámetros globales dados
         """
 
-        mapa = folium.Map(location=[latitud,
-                                    longitud],
-                          zoom_start=params_glob["zoom_inicial"], control_scale=True,
-                          tiles=params_glob["estilo_tiles"])
+        mapa = folium.Map(
+            location=[latitud, longitud],
+            zoom_start=params_glob["zoom_inicial"],
+            control_scale=True,
+            tiles=params_glob["estilo_tiles"],
+        )
         return mapa
 
-    def generar_mapa(self,
-                     datos: gpd.GeoDataFrame,
-                     params_glob: Optional[Union[dict, None]] = None,
-                     params_geometria: Optional[Union[dict, None]] = None) -> Optional[Union[folium.Map, None]]:
+    def generar_mapa(
+        self,
+        datos: gpd.GeoDataFrame,
+        params_glob: Optional[Union[dict, None]] = None,
+        params_geometria: Optional[Union[dict, None]] = None,
+    ) -> Optional[Union[folium.Map, None]]:
         """
         generar_mapa construye un folium.Map a partir de los datos especificados.
         Los parámetros globales (params_glob) indican el aspecto general del mapa, mientras que
@@ -174,6 +198,7 @@ class GeneradorMapas:
 
         # Geometría de los datos
         geometria = self.determinar_geometria(datos)
+        print(geometria)
 
         if params_glob is None:
             params_glob = self._params_glob
@@ -189,70 +214,76 @@ class GeneradorMapas:
 
         # Mensaje a mostrar en el popup del elemento
         mensajes = self.generar_mensajes(datos)
+        print("Mensajes generados")
 
+        # Listas Latitud y longitud de los puntos
+        latitud = (
+            datos["geometry"].to_crs(epsg=self._CRS_METROS).centroid.to_crs(datos.crs).y
+        )
+        longitud = (
+            datos["geometry"].to_crs(epsg=self._CRS_METROS).centroid.to_crs(datos.crs).x
+        )
+
+        # Crear mapa
+        print("Crear mapa folium")
+        mapa = self.crear_mapa_folium(latitud.mean(), longitud.mean(), params_glob)
+
+        print("Dibujar mapa")
         # Crear y dibujar mapa de acuerdo a la geometría
         if geometria == self._tipo_geometria["puntos"]:
+            print("Mapa de puntos")
             # Listas Latitud y longitud de los puntos
             latitud = datos["geometry"].y
             longitud = datos["geometry"].x
 
             # Crear mapa
-            mapa = self.crear_mapa_folium(
-                latitud.mean(), longitud.mean(), params_glob)
+            mapa = self.crear_mapa_folium(latitud.mean(), longitud.mean(), params_glob)
 
             # Dibujar puntos
-            for indice, fila in datos.iterrows():
-                folium.Marker([latitud[indice],
-                               longitud[indice]],
-                              popup=mensajes[indice],
-                              icon=folium.Icon(color=params_geometria["color"])
-                              ).add_to(mapa)
+            for indice in range(len(datos)):
+                folium.Marker(
+                    [latitud[indice], longitud[indice]],
+                    popup=mensajes[indice],
+                    icon=folium.Icon(color=params_geometria["color"]),
+                ).add_to(mapa)
 
         elif geometria == self._tipo_geometria["lineas"]:
-            # Listas Latitud y longitud de los puntos
-            latitud = datos["geometry"].to_crs(
-                epsg=self._CRS_METROS).centroid.to_crs(datos.crs).y
-            longitud = datos["geometry"].to_crs(
-                epsg=self._CRS_METROS).centroid.to_crs(datos.crs).x
-
-            # Crear mapa
-            mapa = self.crear_mapa_folium(
-                latitud.mean(), longitud.mean(), params_glob)
-
             # Dibujar línea
-            for indice, fila in datos.iterrows():
+            print("Mapa de líneas")
+            for indice in range(len(datos)):
                 # Sin simplificar la representación de cada fila,
                 # el mapa podría no visualizarse
-                sim_geo = gpd.GeoSeries(
-                    fila['geometry']).simplify(tolerance=0.001)
+                sim_geo = gpd.GeoSeries(datos.loc[indice, "geometry"]).simplify(
+                    tolerance=0.001
+                )
                 geo_j = sim_geo.to_json()
-                geo_j = folium.GeoJson(data=geo_j,
-                                       style_function=lambda x: {"color": params_geometria["color_linea"],
-                                                                 "weight": params_geometria["ancho_linea"]})
+                geo_j = folium.GeoJson(
+                    data=geo_j,
+                    style_function=lambda x: {
+                        "color": params_geometria["color_linea"],
+                        "weight": params_geometria["ancho_linea"],
+                    },
+                )
                 folium.Popup(mensajes[indice]).add_to(geo_j)
                 geo_j.add_to(mapa)
 
         elif geometria == self._tipo_geometria["poligonos"]:
-            # Listas Latitud y longitud de los puntos
-            latitud = datos["geometry"].to_crs(
-                epsg=self._CRS_METROS).centroid.to_crs(datos.crs).y
-            longitud = datos["geometry"].to_crs(
-                epsg=self._CRS_METROS).centroid.to_crs(datos.crs).x
-
-            # Crear mapa
-            mapa = self.crear_mapa_folium(
-                latitud.mean(), longitud.mean(), params_glob)
-
             # Dibujar polígonos
-            for indice, fila in datos.iterrows():
+            print("Mapa de polígonos")
+            for indice in range(len(datos)):
                 # Sin simplificar la representación de cada fila,
                 # el mapa podría no visualizarse
-                sim_geo = gpd.GeoSeries(
-                    fila['geometry']).simplify(tolerance=0.001)
+                sim_geo = gpd.GeoSeries(datos.loc[indice, "geometry"]).simplify(
+                    tolerance=0.001
+                )
                 geo_j = sim_geo.to_json()
-                geo_j = folium.GeoJson(data=geo_j,
-                                       style_function=lambda x: {"color": params_geometria["color_borde"],
-                                                                 "fillColor": params_geometria["color_relleno"]})
+                geo_j = folium.GeoJson(
+                    data=geo_j,
+                    style_function=lambda x: {
+                        "color": params_geometria["color_borde"],
+                        "fillColor": params_geometria["color_relleno"],
+                    },
+                )
                 folium.Popup(mensajes[indice]).add_to(geo_j)
                 geo_j.add_to(mapa)
 
@@ -263,13 +294,23 @@ class GeneradorMapas:
 
         return mapa
 
-    def guardar_mapa(self, ruta: str, nombre: str, mapa: folium.Map):
+    @staticmethod
+    def guardar_mapa(ruta: str, nombre: str, mapa: folium.Map):
         """
-        guardar_mapa almacena el mapa 
+        guardar_mapa almacena el mapa
         generado en la ruta indicada
         """
 
         mapa.save(f"{ruta}/{nombre}.html")
+
+    @staticmethod
+    def obtener_mapa_html(mapa: folium.Map) -> Any:
+        """
+        obtener_mapa_html retorna el html correspondiente
+        al mapa.
+        """
+
+        return mapa.get_root()._repr_html_()
 
     def obtener_tipos_geometria(self) -> dict:
         """
@@ -295,7 +336,7 @@ class GeneradorMapas:
     def obtener_params_lineas(self) -> dict:
         """
         obtener_params_lineas devuelve los
-        parámetros lineas por defecto
+        parámetros líneas por defecto
         """
         return self._params_lineas
 
