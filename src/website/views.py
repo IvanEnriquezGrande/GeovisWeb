@@ -168,18 +168,21 @@ def mapa():
         print("Cambio de dimensiones listo")
         iframe = mapa_generado.get_root()._repr_html_()
 
+        tabla = datos.drop(columns=["geometry"]).to_html()
+
         return render_template_string(
             """
-                <!DOCTYPE html>
-                <html>
-                    <head></head>
-                    <body>
-                        <h1>Using an iframe</h1>
-                        {{ iframe|safe }}
-                    </body>
-                </html>
+                {% extends "mapa.html" %}
+                {% block title %}Mapa{% endblock %}
+                {% block tabla %}
+                    {{ tabla|safe }}                    
+                {% endblock %}
+                {% block mapa %}
+                    {{ iframe|safe }}                   
+                {% endblock %}
             """,
             iframe=iframe,
+            tabla=tabla,
         )
     else:
         return redirect(url_for("views.error_geometria"))

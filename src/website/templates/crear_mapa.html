@@ -1,70 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap1.min.css') }}">
-        <title>Crear Mapa</title>
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">GeoVis</a>
-                <button class="navbar-toggler" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#navbarColor01"
-                    aria-controls="navbarColor01" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarColor01">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/upload_file">Crear
-                                mapa
-                                <span class="visually-hidden">(current)</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/quienes_somos">Quiénes
-                                somos</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div class="grid-layout3">
-            <div class="cont8">
-                <h2>Ingresa tus archivos</h2>
-            </div>
-            <div class="cont9">
-                {% for message in get_flashed_messages()%}
-                <div class="alert alert-dismissible alert-danger">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <strong>Oh snap!</strong> {{message}}
-                  </div>
-                {% endfor %}
-            </div>
-            <div class="cont10">
+{% extends "base.html" %}
+{% block title %}Crea mapa{% endblock %}
+{% block content %}
+<div class="grid-layout3">
+    <div class="cont8">
+        <h2>Ingresa tus archivos</h2>
+    </div>
+    <div class="cont9">
+        {% for message in get_flashed_messages()%}
+        <div class="alert alert-dismissible alert-danger">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <strong>Oh snap!</strong> {{message}}
+          </div>
+        {% endfor %}
+    </div>
+    <div class="cont10">
 
-                <form action="/upload_file" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="formFile" class="form-label mt-4">Ingresa tus archivos</label>
-                        <input class="form-control" type="file" id="formFile" name="files2" multiple>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-lg btn-primary" type="submit">Submit</button>
-                    </div>
-                </form>
-                
+        <form action="/upload_file" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="formFile" class="form-label mt-4">Ingresa tus archivos</label>
+                <input class="form-control" type="file" id="formFile" name="files2" multiple>
             </div>
-            <div class="cont11">
-                <div class="alert alert-dismissible alert-warning">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <h4 class="alert-heading">Alerta!</h4>
-                    <p class="mb-0">Debes subir cuatro archivos con las extensiones .shp, .shx, .prj y .dbf.</p>
-                  </div>
+            <div class="d-grid gap-2">
+                <button class="btn btn-lg btn-primary" type="submit">Subir</button>
             </div>
-        </div>
-    </body>
-</html>
+        </form>
+
+    </div>
+    <div class="cont11">
+        <div class="alert alert-dismissible alert-warning">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <h4 class="alert-heading">¡Alerta!</h4>
+            <p class="mb-0">Debes subir cuatro archivos con las extensiones .shp, .shx, .prj y .dbf.</p>
+          </div>
+    </div>
+</div>
+{% endblock %}
