@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href= "{{ url_for('static', filename='styles/bootstrap1.min.css') }}">
+    <title>{% block title %}{% endblock %}</title>
+    {% block html_head %}{% endblock %}
+</head>
+<body>
+    <div id="content">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">GeoVis</a>
+                <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navbarColor01"
+                    aria-controls="navbarColor01" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarColor01">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/upload_file">Crear mapa
+                                <span class="visually-hidden">(current)</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/quienes_somos">Quiénes somos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer">
+        {% block footer %}{% endblock %}
+    </div>
+</body>
+</html>

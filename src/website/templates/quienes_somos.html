@@ -1,57 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap1.min.css') }}">
-        <title>Quiénes somos</title>
-    </head>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">GeoVis</a>
-                <button class="navbar-toggler" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#navbarColor01"
-                    aria-controls="navbarColor01" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarColor01">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/upload_file">Crear
-                                mapa
-                                <span class="visually-hidden">(current)</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/quienes_somos">Quiénes
-                                somos</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <div class="grid-layout2">
-            <div class="cont5">
-                <h2>¿Quienes somos?</h2>
-            </div>
-            <div class="cont6">
-                <figure>
-                    <blockquote class="blockquote">
-                      <p class="mb-0">Somos una empresa que se dedica a proporcionar una herramienta que otorgue la facilidad de convertir datos geograficos almacenados en archivos con extension .shp en mapas interactivos que te permitan tener una mejor comprension.</p>
-                    
-                    </blockquote>
-                    <figcaption class="blockquote-footer">
-                      Haciendo mas accesible la informacion <cite title="Source Title">GeoVis</cite>
-                    </figcaption>
-                  </figure>
-            </div>
-            <div class="cont7">
-                <img src={{ url_for('static', filename='styles/mapa3.png') }} width="650px" height="400px">
-            </div>
-        </div>
-        
-    </body>    
-</html>
+{% extends "base.html" %}
+{% block title %}Quiénes somos{% endblock %}
+{% block content %}
+<div class="grid-layout2">
+    <div class="cont5">
+        <h2>¿Quiénes somos?</h2>
+    </div>
+    <div class="cont6">
+        <figure>
+            <blockquote class="blockquote">
+              <p class="mb-0">Somos una empresa que se dedica a proporcionar una herramienta que otorgue la facilidad de convertir datos geográficos almacenados en archivos con extension .shp en mapas interactivos que te permitan tener una mejor comprensión.</p>
+
+            </blockquote>
+            <figcaption class="blockquote-footer">
+              Haciendo más accesible la información <cite title="Source Title">GeoVis</cite>
+            </figcaption>
+          </figure>
+    </div>
+    <div class="cont7">
+        <img alt="Mapa de Querétaro" width="650px" height="400px" src={{ url_for('static', filename='styles/mapa3.png') }}>
+    </div>
+</div>
+{% endblock %}

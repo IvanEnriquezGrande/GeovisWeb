@@ -1,76 +1,40 @@
-<!DOCTYPE html>
-<html>
-
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href= "{{ url_for('static', filename='styles/bootstrap1.min.css') }}">
-        <title>GeoVis</title>
-    </head>
-
-    <body>
-
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">GeoVis</a>
-                <button class="navbar-toggler" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#navbarColor01"
-                    aria-controls="navbarColor01" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarColor01">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/upload_file">Crear mapa
-                                <span class="visually-hidden">(current)</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/quienes_somos">Quiénes somos                              
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+{% extends "base.html" %}
+{% block title %}GeoVis{% endblock %}
+{% block content %}
+<div class="grid-layout">
+    <div class="cont1">
+        <div class="card border-success mb-3" style="max-width: 30rem;">
+            <div class="card-header">¿Que es GeoVis?</div>
+            <div class="card-body">
+              <h4 class="card-title">GeoVis</h4>
+              <p class="card-text">GeoVis es una plataforma que te permite convertir archivos con extensión .shp en mapas de visualización de datos</p>
             </div>
-        </nav>
-
-        <div class="grid-layout">
-            <div class="cont1">
-                <div class="card border-success mb-3" style="max-width: 30rem;">
-                    <div class="card-header">¿Que es Geovis?</div>
-                    <div class="card-body">
-                      <h4 class="card-title">GeoVis</h4>
-                      <p class="card-text">Geovis es una plataforma que te permite converitir archivos con extesión .shp en mapas de visualización de datos</p>
-                    </div>
-                  </div>
-                <!--<h2>¿Que es Geovis?</h2>
-                <p></p>
-                <p>Geovis es una plataforma que te permite converitir archivos con extesión .shp en mapas de visualización de datos</p>-->
+          </div>
+        <!--<h2>¿Qué es GeoVis?</h2>
+        <p></p>
+        <p>GeoVis es una plataforma que te permite convertir archivos con extensión .shp en mapas de visualización de datos</p>-->
+    </div>
+    <div class="cont2">
+        <div class="card border-primary mb-3" style="max-width: 30rem; max-height: 20rem;">
+            <div class="card-header">¿Cuál es nuestro objetivo?</div>
+            <div class="card-body">
+              <h4 class="card-title">Objetivo</h4>
+              <p class="card-text">El objetivo GeoVis es hacer la información geográfica más accesible para el público en general.</p>
             </div>
-            <div class="cont2">
-                <div class="card border-primary mb-3" style="max-width: 30rem; max-height: 20rem;">
-                    <div class="card-header">¿Cual es nuestro objetivo?</div>
-                    <div class="card-body">
-                      <h4 class="card-title">Objetivo</h4>
-                      <p class="card-text">El objetivo Geovis es hacer la informacion geografica mas accesible para el publico en general.</p>
-                    </div>
-                  </div>
-                <!--<h2>¿Cual es nuestro objetivo?</h2>
-                <p></p>
-                <p>El Geovis es hacer la informacion geografica mas accesible la informacion geografica</p>-->
-            </div>
-            <div class="cont3">
-                <div class="alert alert-dismissible alert-warning">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    <h4 class="alert-heading">¿Donde conseguir archivos.shp?</h4>
-                    <p class="mb-0">Puedes conseguir  archivos .shp <a href="https://www.inegi.org.mx/app/mapas/" class="alert-link">aqui</a>.</p>
-                  </div>
-            </div>
-            <div class="cont4">
-                <img src="{{ url_for('static', filename='styles/mapa5.jpg') }}" width="760px" height="500px">
-            </div>
-        </div>
-    </body>
-</html>
+          </div>
+        <!--<h2>¿Cuál es nuestro objetivo?</h2>
+        <p></p>
+        <p>El GeoVis es hacer la información geográfica más accesible la información geográfica</p>-->
+    </div>
+    <div class="cont3">
+        <div class="alert alert-dismissible alert-warning">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <h4 class="alert-heading">¿Dónde conseguir archivos.shp?</h4>
+            <p class="mb-0">Puedes conseguir archivos .shp <a href="https://www.inegi.org.mx/app/mapas/" class="alert-link">aquí</a>.</p>
+          </div>
+    </div>
+    <div class="cont4">
+        <img src="{{ url_for('static', filename='styles/mapa5.jpg') }}" width="760px" height="500px" alt="Mapa de Querétaro">
+    </div>
+</div>
+{% endblock %}
