@@ -11,6 +11,7 @@ from flask import (
 from werkzeug.utils import secure_filename
 import os
 from .generador_mapas import GeneradorMapas
+from .utils import borrar_archivos, archivos_obligatorios, extensiones_validas
 
 views = Blueprint("views", __name__)
 
@@ -18,58 +19,6 @@ archivos = []  # archivos guardados del "submit"
 archivo_shp = ""  # nombre del shp
 ruta_shp = ""  # ubicación del shp
 ruta_templates = ".\\website\\templates"
-
-
-def borrar_archivos():
-    """
-    borrar_Archivos elimina archivos de
-    la carpeta test1 y vacía la lista de archivos
-    """
-    global archivos
-    for archivo in archivos:
-        os.remove(os.path.join(current_app.config["UPLOAD_PATH"], archivo))
-    archivos = []
-
-
-def extensiones_validas(file):
-    """
-    extensiones_validas revisa si los archivos
-    tienen una extensión permitida
-    y retorna true si es el caso.
-    """
-    file = file.upper()
-    ext = file.rsplit(".", 1)[1]
-
-    if ext not in current_app.config["ALLOWED_EXTENSIONS"]:
-        return False
-
-    return True
-
-
-def archivos_obligatorios():
-    """
-    archivos_obligatorios revisa que existan 4 archivos
-    con extensiones .shp .ptj .dbf .shx
-    entre los archivos guardados en tes1,
-    si se cumple retorna una cadena vacía, pero
-    en caso contrario retorna una cadena con la extensión faltante.
-    """
-    extensiones = [archivo.rsplit(".", 1)[1] for archivo in archivos]
-    print(extensiones)
-
-    if "shp" not in extensiones:
-        return "Se necesita un archivo con extensión .shp"
-
-    elif "shx" not in extensiones:
-        return "Se necesita un archivo con extensión .shx"
-
-    elif "dbf" not in extensiones:
-        return "Se necesita un archivo con extensión .dbf"
-
-    elif "prj" not in extensiones:
-        return "Se necesita un archivo con extensión .prj"
-
-    return ""
 
 
 @views.route("/")
@@ -118,7 +67,7 @@ def upload_file():
             else:
                 print("Archivo no permitido: {}".format(file.filename))
 
-        archivo_faltante = archivos_obligatorios()
+        archivo_faltante = archivos_obligatorios(archivos)
 
         if archivo_faltante != "":
             # Mostrar aviso con la extension faltante
@@ -148,6 +97,7 @@ def crear_mapa_success():
 
 @views.route("/mapa")
 def mapa():
+    global archivos
     generador = GeneradorMapas()
     print("Obteniendo datos de " + ruta_shp)
     datos = generador.obtener_datos(ruta_shp)
@@ -158,7 +108,7 @@ def mapa():
     mapa_generado = generador.generar_mapa(datos)
     print("Mapa generado")
     if mapa_generado is not None:
-        borrar_archivos()
+        borrar_archivos(archivos)
 
         print("Dentro del if")
 
@@ -190,5 +140,6 @@ def mapa():
 
 @views.route("/error")
 def error_geometria():
-    borrar_archivos()
+    global archivos
+    borrar_archivos(archivos)
     return render_template("error_geometria.html")
