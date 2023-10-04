@@ -2,17 +2,17 @@ import os
 from flask import current_app
 
 
-def borrar_archivos(archivos):
+def borrar_archivos(archivos: list[str]) -> list[str]:
     """
     borrar_Archivos elimina archivos de
     la carpeta test1 y vacía la lista de archivos
     """
     for archivo in archivos:
         os.remove(os.path.join(current_app.config["UPLOAD_PATH"], archivo))
-    archivos = []
+    return []
 
 
-def extensiones_validas(file):
+def extensiones_validas(file: str) -> bool:
     """
     extensiones_validas revisa si los archivos
     tienen una extensión permitida
@@ -27,7 +27,7 @@ def extensiones_validas(file):
     return True
 
 
-def archivos_obligatorios(archivos):
+def archivos_obligatorios(archivos: list[str]) -> str:
     """
     archivos_obligatorios revisa que existan 4 archivos
     con extensiones .shp .ptj .dbf .shx
