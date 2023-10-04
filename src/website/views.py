@@ -108,7 +108,7 @@ def mapa():
     mapa_generado = generador.generar_mapa(datos)
     print("Mapa generado")
     if mapa_generado is not None:
-        borrar_archivos(archivos)
+        archivos = borrar_archivos(archivos)
 
         print("Dentro del if")
 
@@ -141,5 +141,5 @@ def mapa():
 @views.route("/error")
 def error_geometria():
     global archivos
-    borrar_archivos(archivos)
+    archivos = borrar_archivos(archivos)
     return render_template("error_geometria.html")
