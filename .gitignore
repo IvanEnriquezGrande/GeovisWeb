@@ -4,5 +4,6 @@ src/__pycache__/*
 src/website/__pycache__/*
 src/website/web/*
 .idea/
+src/uploads/test1
 
 pyvenv.cfg
