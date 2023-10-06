@@ -1,44 +1,58 @@
-<!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href= "{{ url_for('static', filename='styles/bootstrap1.min.css') }}">
-    <title>{% block title %}{% endblock %}</title>
-    {% block html_head %}{% endblock %}
-</head>
-<body>
-    <div id="content">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">GeoVis</a>
-                <button class="navbar-toggler" type="button"
-                    data-bs-toggle="collapse" data-bs-target="#navbarColor01"
-                    aria-controls="navbarColor01" aria-expanded="false"
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles/bootstrap1.min.css') }}">
+        <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css'>
+        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css'>
+        <link rel="stylesheet" href="../static/styles/style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="icon" type="image/png" href="../static/img/Geovis.png">
+        {% block html_head %}{% endblock %}
+    </head>
+    
+    <body>
+        <nav class="navbar navbar-expand-custom navbar-mainbg">
+            <a class="navbar-brand navbar-logo" href="/">
+                <img src="../static/img/Geovis.svg" alt="Logo" width="24px" height="24px">
+                Geovis
+            </a>
+            <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false"
                     aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarColor01">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/upload_file">Crear mapa
-                                <span class="visually-hidden">(current)</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/quienes_somos">Quiénes somos
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <i class="fas fa-bars text-white"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <div class="hori-selector">
+                        <div class="left"></div>
+                        <div class="right"></div>
+                    </div>
+                    <li class="nav-item async active">
+                        <a class="nav-link " href="/"><i class="bi bi-info-circle"></i>¿Qué es GEOVIS?</a>
+                    </li>
+                    <li class="nav-item async">
+                        <a class="nav-link" href="/upload_file"><i class="bi bi-globe-americas"></i>Crear mapa</a>
+                    </li>
+                    <li class="nav-item async">
+                        <a class="nav-link" href="/quienes_somos"><i class="far fa-address-book"></i>Quienes somos</a>
+                    </li>
+                </ul>
             </div>
         </nav>
-        {% block content %}{% endblock %}
-    </div>
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+        
+        <div id="footer">
+            {% block footer %}{% endblock %}
+        </div>
+        
+        <script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js'></script>
+        <script src="../static/js/script.js"></script>
+    </body>
 
-    <div id="footer">
-        {% block footer %}{% endblock %}
-    </div>
-</body>
 </html>
