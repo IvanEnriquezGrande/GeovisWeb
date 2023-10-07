@@ -1,10 +1,49 @@
 {% extends "base.html" %}
 {% block title %}Mapa{% endblock %}
+{% block html_head %}
+    <link href='https://unpkg.com/gridjs/dist/theme/mermaid.min.css' rel='stylesheet'>
+    <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+    <script src="https://unpkg.com/gridjs/l10n/dist/l10n.umd.js"></script>
+{% endblock %}
 {% block content %}
     <div id="tabla">
-    {% block tabla %}{% endblock %}
+        {% block tabla %}
+            <div id="datos-wrapper"></div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const datos = JSON.parse('{{ datos_tabla | tojson | safe}}');
+                    const datosLimpios = datos.map(dato => {
+                        const nuevoDato = {}
+                        Object.keys(dato).forEach(key => {
+                            nuevoDato[key.toLowerCase()] = dato[key]
+                        })
+                        return nuevoDato
+                    })
+                    new gridjs.Grid({
+                        sort: true,
+                        search: true,
+                        data: datosLimpios,
+                        pagination: {
+                            limit: 10,
+                            summary: false
+                        },
+                        language: {
+                            'search': {
+                              'placeholder': '🔍 Buscar...'
+                            },
+                            'pagination': {
+                                'previous': 'Anterior', // '⬅️',
+                                'next': 'Siguiente', // '➡️',
+                                {#'showing': '😃 Displaying',
+                                'results': () => 'Records'#}
+                            }
+                        }
+                    }).render(document.getElementById('datos-wrapper'));
+                });
+            </script>
+        {% endblock %}
     </div>
     <div id="mapa">
-    {% block mapa %}{% endblock %}
+        {% block mapa %}{{ iframe|safe }}{% endblock %}
     </div>
 {% endblock %}

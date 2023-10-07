@@ -6,7 +6,6 @@ from flask import (
     flash,
     url_for,
     redirect,
-    render_template_string,
 )
 from werkzeug.utils import secure_filename
 import os
@@ -118,21 +117,13 @@ def mapa():
         print("Cambio de dimensiones listo")
         iframe = mapa_generado.get_root()._repr_html_()
 
-        tabla = datos.drop(columns=["geometry"]).to_html()
+        datos_tabla = datos.drop(columns=["geometry"]).to_dict(orient="records")
+        print(datos_tabla)
 
-        return render_template_string(
-            """
-                {% extends "mapa.html" %}
-                {% block title %}Mapa{% endblock %}
-                {% block tabla %}
-                    {{ tabla|safe }}                    
-                {% endblock %}
-                {% block mapa %}
-                    {{ iframe|safe }}                   
-                {% endblock %}
-            """,
+        return render_template(
+            "mapa.html",
             iframe=iframe,
-            tabla=tabla,
+            datos_tabla=datos_tabla,
         )
     else:
         return redirect(url_for("views.error_geometria"))
