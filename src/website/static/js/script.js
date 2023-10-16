@@ -65,3 +65,11 @@ jQuery(document).ready(function($) {
     });
 });
 
+$(document).ready(function() {
+    // Obtiene la parte de la URL que identifica la página actual
+    var path = window.location.pathname;
+
+    // Marca la pestaña correspondiente como activa
+    $('#navbarSupportedContent ul li').removeClass('active');
+    $('#navbarSupportedContent ul li a[href="' + path + '"]').parent().addClass('active');
+});
