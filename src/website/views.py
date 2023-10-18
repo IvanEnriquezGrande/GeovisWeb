@@ -117,13 +117,19 @@ def mapa():
         print("Cambio de dimensiones listo")
         iframe = mapa_generado.get_root()._repr_html_()
 
-        datos_tabla = datos.drop(columns=["geometry"]).to_dict(orient="records")
-        print(datos_tabla)
+        datos2 = datos.drop(columns=["geometry"])
+        datos_tabla = datos2.to_dict(orient="records")
+        columnas = datos2.columns
+        columnas_tabla = [{"id": col.lower(), "name": col} for col in columnas]
+        print(datos.drop(columns=["geometry"]).columns)
+        print(len(datos_tabla))
+        print(columnas_tabla)
 
         return render_template(
             "mapa.html",
             iframe=iframe,
             datos_tabla=datos_tabla,
+            columnas_tabla=columnas_tabla,
         )
     else:
         return redirect(url_for("views.error_geometria"))

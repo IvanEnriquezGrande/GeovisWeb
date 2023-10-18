@@ -30,8 +30,8 @@ def extensiones_validas(file: str) -> bool:
 def archivos_obligatorios(archivos: list[str]) -> str:
     """
     archivos_obligatorios revisa que existan 4 archivos
-    con extensiones .shp .ptj .dbf .shx
-    entre los archivos guardados en tes1,
+    con extensiones .shp .prj .dbf .shx
+    entre los archivos guardados en test1,
     si se cumple retorna una cadena vacía, pero
     en caso contrario retorna una cadena con la extensión faltante.
     """

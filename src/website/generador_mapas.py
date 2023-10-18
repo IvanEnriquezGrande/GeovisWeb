@@ -97,6 +97,14 @@ class GeneradorMapas:
         print("Leyendo archivo")
         datos = gpd.read_file(ruta)  # Leer archivo
         datos = datos.to_crs(epsg=self._CRS)  # Convertir datos a CRS 6365
+
+        for col in datos.columns:
+            if (
+                datos[col].dtype == "object"
+            ):  # Verificar si la columna es de tipo string
+                datos[col] = datos[col].str.replace(
+                    '"', r"\""
+                )  # Reemplazar las comillas por su versión escapada
         print("Lectura de archivo finalizada")
 
         return datos
