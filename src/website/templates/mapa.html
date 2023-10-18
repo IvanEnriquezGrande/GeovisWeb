@@ -11,6 +11,7 @@
             <div id="datos-wrapper"></div>
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
+                    const columnas = JSON.parse('{{ columnas_tabla | tojson | safe}}');
                     const datos = JSON.parse('{{ datos_tabla | tojson | safe}}');
                     const datosLimpios = datos.map(dato => {
                         const nuevoDato = {}
@@ -19,14 +20,17 @@
                         })
                         return nuevoDato
                     })
+
                     new gridjs.Grid({
-                        sort: true,
-                        search: true,
+                        columns: columnas,
                         data: datosLimpios,
                         pagination: {
                             limit: 10,
                             summary: false
                         },
+                        sort: true,
+                        search: true,
+                        resizable: true,
                         language: {
                             'search': {
                               'placeholder': '🔍 Buscar...'
@@ -34,8 +38,8 @@
                             'pagination': {
                                 'previous': 'Anterior', // '⬅️',
                                 'next': 'Siguiente', // '➡️',
-                                {#'showing': '😃 Displaying',
-                                'results': () => 'Records'#}
+                                'showing': 'Mostrando',
+                                'results': () => 'resultados'
                             }
                         }
                     }).render(document.getElementById('datos-wrapper'));
