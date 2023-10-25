@@ -1,18 +1,30 @@
-// ---------Responsive-navbar-active-animation-----------
-function test(){
-	var tabsNewAnim = $('#navbarSupportedContent');
-	var selectorNewAnim = $('#navbarSupportedContent').find('li').length;
-	var activeItemNewAnim = tabsNewAnim.find('.active');
-	var activeWidthNewAnimHeight = activeItemNewAnim.innerHeight();
-	var activeWidthNewAnimWidth = activeItemNewAnim.innerWidth();
-	var itemPosNewAnimTop = activeItemNewAnim.position();
-	var itemPosNewAnimLeft = activeItemNewAnim.position();
-	$(".hori-selector").css({
-		"top":itemPosNewAnimTop.top + "px",
-		"left":itemPosNewAnimLeft.left + "px",
-		"height": activeWidthNewAnimHeight + "px",
-		"width": activeWidthNewAnimWidth + "px"
-	});
+function test() {
+    var tabsNewAnim = $('#navbarSupportedContent');
+
+    // Verifica si se encontró el elemento '#navbarSupportedContent' en la página
+    if (tabsNewAnim.length === 0) {
+        return;
+    }
+
+    var activeItemNewAnim = tabsNewAnim.find('.active');
+
+    // Verifica si se encontró un elemento con la clase 'active'
+    if (activeItemNewAnim.length === 0) {
+        return;
+    }
+
+    var activeWidthNewAnimHeight = activeItemNewAnim.innerHeight();
+    var activeWidthNewAnimWidth = activeItemNewAnim.innerWidth();
+    var itemPosNewAnimTop = activeItemNewAnim.position();
+    var itemPosNewAnimLeft = activeItemNewAnim.position();
+
+    $(".hori-selector").css({
+        "top": itemPosNewAnimTop.top + "px",
+        "left": itemPosNewAnimLeft.left + "px",
+        "height": activeWidthNewAnimHeight + "px",
+        "width": activeWidthNewAnimWidth + "px"
+    });
+}
 
     $("#navbarSupportedContent").on("click", "li", function(e) {
         e.preventDefault();
@@ -34,7 +46,7 @@ function test(){
 			"width": activeWidthNewAnimWidth + "px"
 		});
 	});
-}
+
 $(document).ready(function(){
 	setTimeout(function(){ test(); });
 });
@@ -62,6 +74,15 @@ jQuery(document).ready(function($) {
         if (href === path) {
             $(this).parent().addClass('active');
         }
+    });
+});
+
+$("#navbarSupportedContent").on("click", "li", function(e) {
+    e.preventDefault();
+    var linkHref = $(this).find('a').attr('href');
+    $('#content').load(linkHref  + ' #content > *', function() {
+        // Llama a la función test después de cargar el contenido
+        test();
     });
 });
 
