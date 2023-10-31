@@ -7,6 +7,7 @@ archivos shp y todos los archivos complementarios.
 from typing import Optional, Union, Any
 import geopandas as gpd
 import folium
+from folium.plugins import GroupedLayerControl
 
 
 class GeneradorMapas:
@@ -33,14 +34,14 @@ class GeneradorMapas:
 
         # Opciones de tiles para mostrar en el mapa
         self._estilo_tiles = {
-            "open_street_map": "OpenStreetMap",
-            "carto_db_light": "CartoDB positron",
-            "carto_db_dark": "CartoDB dark_matter",
+            "Open StreetMap": "OpenStreetMap",
+            "Claro": "CartoDB positron",
+            "Oscuro": "CartoDB dark_matter",
         }
 
         self._params_glob = {
             "zoom_inicial": self._zoom_inicial,
-            "estilo_tiles": self._estilo_tiles["carto_db_light"],
+            "estilo_tiles": self._estilo_tiles["Claro"],
         }
 
         self._tipo_geometria = {
@@ -84,7 +85,7 @@ class GeneradorMapas:
         # Parámetros polígonos
         # Puede ser un valor hexadecimal o el nombre de color válido
         self._params_poligonos = {
-            "color_relleno": "#00FF00",  # hexadecimal
+            "color_relleno": "green",  # "#00FF00",  # hexadecimal
             "color_borde": "green",  # nombre del color
         }
 
@@ -176,7 +177,7 @@ class GeneradorMapas:
 
     @staticmethod
     def crear_mapa_folium(
-        latitud: float, longitud: float, params_glob: dict
+        self, latitud: float, longitud: float, params_glob: dict
     ) -> folium.Map:
         """
         Crea un folium.Map centrado en la latitud y longitud especificadas
@@ -187,8 +188,9 @@ class GeneradorMapas:
             location=[latitud, longitud],
             zoom_start=params_glob["zoom_inicial"],
             control_scale=True,
-            tiles=params_glob["estilo_tiles"],
+            tiles=None,
         )
+
         return mapa
 
     def generar_mapa(
@@ -234,9 +236,35 @@ class GeneradorMapas:
 
         # Crear mapa
         print("Crear mapa folium")
-        mapa = self.crear_mapa_folium(latitud.mean(), longitud.mean(), params_glob)
+        mapa = self.crear_mapa_folium(
+            self, latitud.mean(), longitud.mean(), params_glob
+        )
+
+        # Definir estilo de teselas y agregarlas al objeto mapa.
+        t1 = folium.TileLayer(tiles="OpenStreetMap", name="Open Street Map")
+        t2 = folium.TileLayer(tiles="CartoDB positron", name="Claro")
+        t3 = folium.TileLayer(tiles="CartoDB dark_matter", name="Oscuro")
+
+        t1.add_to(mapa)
+        t2.add_to(mapa)
+        t3.add_to(mapa)
 
         print("Dibujar mapa")
+
+        # Grupos que representan los distintos colores de los objetos.
+        verde = folium.FeatureGroup(name="Verde", overlay=False)
+        azul = folium.FeatureGroup(name="Azul", overlay=False)
+        naranja = folium.FeatureGroup(name="Naranja", overlay=False)
+        morado = folium.FeatureGroup(name="Morado", overlay=False)
+        rojo = folium.FeatureGroup(name="Rojo", overlay=False)
+
+        grupos = {
+            "verde": {"capa": verde, "nombre": "Verde", "color": "green"},
+            "azul": {"capa": azul, "nombre": "Azul", "color": "blue"},
+            "naranja": {"capa": naranja, "nombre": "Naranja", "color": "orange"},
+            "morado": {"capa": morado, "nombre": "Morado", "color": "purple"},
+            "rojo": {"capa": rojo, "nombre": "Rojo", "color": "red"},
+        }
         # Crear y dibujar mapa de acuerdo a la geometría
         if geometria == self._tipo_geometria["puntos"]:
             print("Mapa de puntos")
@@ -244,16 +272,37 @@ class GeneradorMapas:
             latitud = datos["geometry"].y
             longitud = datos["geometry"].x
 
-            # Crear mapa
-            mapa = self.crear_mapa_folium(latitud.mean(), longitud.mean(), params_glob)
-
             # Dibujar puntos
             for indice in range(len(datos)):
                 folium.Marker(
                     [latitud[indice], longitud[indice]],
                     popup=mensajes[indice],
-                    icon=folium.Icon(color=params_geometria["color"]),
-                ).add_to(mapa)
+                    icon=folium.Icon(color=grupos["verde"]["color"]),
+                ).add_to(grupos["verde"]["capa"])
+
+                folium.Marker(
+                    [latitud[indice], longitud[indice]],
+                    popup=mensajes[indice],
+                    icon=folium.Icon(color=grupos["azul"]["color"]),
+                ).add_to(grupos["azul"]["capa"])
+
+                folium.Marker(
+                    [latitud[indice], longitud[indice]],
+                    popup=mensajes[indice],
+                    icon=folium.Icon(color=grupos["naranja"]["color"]),
+                ).add_to(grupos["naranja"]["capa"])
+
+                folium.Marker(
+                    [latitud[indice], longitud[indice]],
+                    popup=mensajes[indice],
+                    icon=folium.Icon(color=grupos["morado"]["color"]),
+                ).add_to(grupos["morado"]["capa"])
+
+                folium.Marker(
+                    [latitud[indice], longitud[indice]],
+                    popup=mensajes[indice],
+                    icon=folium.Icon(color=grupos["rojo"]["color"]),
+                ).add_to(grupos["rojo"]["capa"])
 
         elif geometria == self._tipo_geometria["lineas"]:
             # Dibujar línea
@@ -264,42 +313,146 @@ class GeneradorMapas:
                 sim_geo = gpd.GeoSeries(datos.loc[indice, "geometry"]).simplify(
                     tolerance=0.001
                 )
-                geo_j = sim_geo.to_json()
-                geo_j = folium.GeoJson(
-                    data=geo_j,
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
                     style_function=lambda x: {
-                        "color": params_geometria["color_linea"],
+                        "color": grupos["verde"]["color"],
                         "weight": params_geometria["ancho_linea"],
                     },
                 )
-                folium.Popup(mensajes[indice]).add_to(geo_j)
-                geo_j.add_to(mapa)
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["verde"]["capa"])
+
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
+                    style_function=lambda x: {
+                        "color": grupos["azul"]["color"],
+                        "weight": params_geometria["ancho_linea"],
+                    },
+                )
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["azul"]["capa"])
+
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
+                    style_function=lambda x: {
+                        "color": grupos["naranja"]["color"],
+                        "weight": params_geometria["ancho_linea"],
+                    },
+                )
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["naranja"]["capa"])
+
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
+                    style_function=lambda x: {
+                        "color": grupos["morado"]["color"],
+                        "weight": params_geometria["ancho_linea"],
+                    },
+                )
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["morado"]["capa"])
+
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
+                    style_function=lambda x: {
+                        "color": grupos["rojo"]["color"],
+                        "weight": params_geometria["ancho_linea"],
+                    },
+                )
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["rojo"]["capa"])
 
         elif geometria == self._tipo_geometria["poligonos"]:
             # Dibujar polígonos
             print("Mapa de polígonos")
+
             for indice in range(len(datos)):
                 # Sin simplificar la representación de cada fila,
                 # el mapa podría no visualizarse
                 sim_geo = gpd.GeoSeries(datos.loc[indice, "geometry"]).simplify(
                     tolerance=0.001
                 )
-                geo_j = sim_geo.to_json()
-                geo_j = folium.GeoJson(
-                    data=geo_j,
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
                     style_function=lambda x: {
-                        "color": params_geometria["color_borde"],
-                        "fillColor": params_geometria["color_relleno"],
+                        "color": grupos["verde"]["color"],
+                        "fillColor": grupos["verde"]["color"],
                     },
                 )
-                folium.Popup(mensajes[indice]).add_to(geo_j)
-                geo_j.add_to(mapa)
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["verde"]["capa"])
+
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
+                    style_function=lambda x: {
+                        "color": grupos["azul"]["color"],
+                        "fillColor": grupos["azul"]["color"],
+                    },
+                )
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["azul"]["capa"])
+
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
+                    style_function=lambda x: {
+                        "color": grupos["naranja"]["color"],
+                        "fillColor": grupos["naranja"]["color"],
+                    },
+                )
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["naranja"]["capa"])
+
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
+                    style_function=lambda x: {
+                        "color": grupos["morado"]["color"],
+                        "fillColor": grupos["morado"]["color"],
+                    },
+                )
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["morado"]["capa"])
+
+                geo_js = sim_geo.to_json()
+                geo_js = folium.GeoJson(
+                    data=geo_js,
+                    style_function=lambda x: {
+                        "color": grupos["rojo"]["color"],
+                        "fillColor": grupos["rojo"]["color"],
+                    },
+                )
+                folium.Popup(mensajes[indice]).add_to(geo_js)
+                geo_js.add_to(grupos["rojo"]["capa"])
 
         else:
             # Aquí podría devolver un error
             mapa = None
             print("No se puede trabajar con ese tipo de geometria")
 
+        grupos["verde"]["capa"].add_to(mapa)
+        grupos["azul"]["capa"].add_to(mapa)
+        grupos["naranja"]["capa"].add_to(mapa)
+        grupos["morado"]["capa"].add_to(mapa)
+        grupos["rojo"]["capa"].add_to(mapa)
+
+        # folium.LayerControl(collapsed=False).add_to(mapa)
+
+        GroupedLayerControl(
+            groups={
+                "---ESTILO---": [t1, t2, t3],
+                "---COLORES---": [verde, azul, naranja, morado, rojo],
+            },
+            collapsed=False,
+        ).add_to(mapa)
         return mapa
 
     @staticmethod

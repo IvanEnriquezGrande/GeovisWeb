@@ -37,9 +37,13 @@ def upload_file():
     global archivos
     global ruta_templates
 
-    # revisar si existen mapa1.html
-    if os.path.exists(os.path.join(ruta_templates, "mapa1.html")):
-        os.remove(os.path.join(ruta_templates, "mapa1.html"))
+    # Revisar si hay archivos en current_app.config["UPLOAD_PATH"]
+    archivos_uploads = os.listdir(current_app.config["UPLOAD_PATH"])
+    if len(archivos_uploads) != 0:
+        print("Borrar archivos en uploads/test1")
+        print(archivos_uploads)
+        for archivo in archivos_uploads:
+            os.remove(os.path.join(current_app.config["UPLOAD_PATH"], archivo))
 
     if request.method == "POST":
         # Obtener archivos que subió el usuario
