@@ -1,10 +1,10 @@
 #mapa-container {
-    /* display: grid;
+    display: grid;
     grid-template-columns: 70% 30%; /* 70% del ancho para el mapa y 30% para el nuevo div */
 }
 
 #mapa {
     /* Estilos para el mapa */
-    background-color: lightgray;
+    /* background-color: lightgray; */
     padding: 20px;
 }
