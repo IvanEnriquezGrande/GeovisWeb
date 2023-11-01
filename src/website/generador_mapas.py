@@ -438,21 +438,22 @@ class GeneradorMapas:
             mapa = None
             print("No se puede trabajar con ese tipo de geometria")
 
-        grupos["verde"]["capa"].add_to(mapa)
-        grupos["azul"]["capa"].add_to(mapa)
-        grupos["naranja"]["capa"].add_to(mapa)
-        grupos["morado"]["capa"].add_to(mapa)
-        grupos["rojo"]["capa"].add_to(mapa)
+        if mapa is not None:
+            grupos["verde"]["capa"].add_to(mapa)
+            grupos["azul"]["capa"].add_to(mapa)
+            grupos["naranja"]["capa"].add_to(mapa)
+            grupos["morado"]["capa"].add_to(mapa)
+            grupos["rojo"]["capa"].add_to(mapa)
 
-        # folium.LayerControl(collapsed=False).add_to(mapa)
+            # folium.LayerControl(collapsed=False).add_to(mapa)
 
-        GroupedLayerControl(
-            groups={
-                "---ESTILO---": [t1, t2, t3],
-                "---COLORES---": [verde, azul, naranja, morado, rojo],
-            },
-            collapsed=False,
-        ).add_to(mapa)
+            GroupedLayerControl(
+                groups={
+                    "---ESTILO---": [t1, t2, t3],
+                    "---COLORES---": [verde, azul, naranja, morado, rojo],
+                },
+                collapsed=False,
+            ).add_to(mapa)
         return mapa
 
     @staticmethod
