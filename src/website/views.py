@@ -45,6 +45,9 @@ def upload_file():
         for archivo in archivos_uploads:
             os.remove(os.path.join(current_app.config["UPLOAD_PATH"], archivo))
 
+        # Hay vaciar la lista archivos, caso contrario ocurre un error
+        archivos = []
+
     if request.method == "POST":
         # Obtener archivos que subió el usuario
         f = request.files.getlist("files2")
