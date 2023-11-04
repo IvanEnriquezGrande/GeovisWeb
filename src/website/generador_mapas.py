@@ -461,8 +461,8 @@ class GeneradorMapas:
         """
         guardar_mapa almacena el mapa
         generado en la ruta indicada
+        Opciones de formato disponibles:
         """
-
         mapa.save(f"{ruta}/{nombre}.html")
 
     @staticmethod

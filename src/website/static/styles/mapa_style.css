@@ -1,10 +1,19 @@
-#mapa-container {
+.mapa-container {
     display: grid;
+    grid-gap: 10em;
     grid-template-columns: 70% 30%; /* 70% del ancho para el mapa y 30% para el nuevo div */
 }
 
-#mapa {
+.mapa {
     /* Estilos para el mapa */
     /* background-color: lightgray; */
+    grid-column: 1;
+    padding: 20px;
+}
+
+.descargar-mapa {
+    /* Estilos para el mapa */
+    /* background-color: lightgray; */
+    grid-column: 2;
     padding: 20px;
 }

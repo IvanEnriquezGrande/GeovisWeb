@@ -7,15 +7,24 @@
     <script src="https://unpkg.com/gridjs/l10n/dist/l10n.umd.js"></script>
 {% endblock %}
 {% block content %}
-    <div id="mapa-container">
-        <div id="mapa">
+    <div class="mapa-container">
+        <div class="mapa">
             {% block mapa %}{{ iframe|safe }}{% endblock %}
         </div>
-        <div id="descargar-mapa">
-
+        <div class="descargar">
+            <div class="dropdown">
+              <button class="btn btn-lg btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                Descargar mapa
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="{{ url_for('views.descargar_mapa', archivo="mapa_usuario.html") }}">Como HTML</a>
+                <a class="dropdown-item" href="#">Como JPEG</a>
+              </div>
+            </div>
         </div>
     </div>
-    <div id="tabla">
+
+    <div class="tabla">
         {% block tabla %}
             <div id="datos-wrapper"></div>
             <script>

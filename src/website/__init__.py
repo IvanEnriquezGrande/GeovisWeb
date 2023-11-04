@@ -4,7 +4,7 @@ from flask import Flask
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "xsaiodoiewhoesicc"
-    app.config["UPLOAD_PATH"] = ".\\website\\uploads\\test1"
+    app.config["UPLOAD_PATH"] = "uploads\\test1"
     app.config["ALLOWED_EXTENSIONS"] = [
         "SHP",
         "CPG",

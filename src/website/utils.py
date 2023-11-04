@@ -7,8 +7,9 @@ def borrar_archivos(archivos: list[str]) -> list[str]:
     borrar_Archivos elimina archivos de
     la carpeta test1 y vacía la lista de archivos
     """
+    uploads = os.path.join(current_app.root_path, current_app.config["UPLOAD_PATH"])
     for archivo in archivos:
-        os.remove(os.path.join(current_app.config["UPLOAD_PATH"], archivo))
+        os.remove(os.path.join(uploads, archivo))
     return []
 
 
