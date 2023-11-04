@@ -11,7 +11,12 @@ from flask import (
 from werkzeug.utils import secure_filename
 import os
 from .generador_mapas import GeneradorMapas
-from .utils import borrar_archivos, archivos_obligatorios, extensiones_validas
+from .utils import (
+    borrar_archivos,
+    archivos_obligatorios,
+    extensiones_validas,
+    convertir_mapa_png,
+)
 
 views = Blueprint("views", __name__)
 
@@ -19,6 +24,7 @@ archivos = []  # archivos guardados del "submit"
 archivo_shp = ""  # nombre del shp
 ruta_shp = ""  # ubicación del shp
 ruta_templates = ".\\website\\templates"
+mapa_final = None
 
 
 @views.route("/")
@@ -104,11 +110,12 @@ def crear_mapa_success():
 @views.route("/mapa")
 def mapa():
     global archivos
+    global mapa_final
     generador = GeneradorMapas()
     print("Obteniendo datos de " + ruta_shp)
     datos = generador.obtener_datos(ruta_shp)
-    colores = generador.obtener_nombres_colores()
-    estilo_tiles = generador.obtener_estilo_tiles()
+    # colores = generador.obtener_nombres_colores()
+    # estilo_tiles = generador.obtener_estilo_tiles()
 
     print("Empezando a generar mapa")
     mapa_generado = generador.generar_mapa(datos)
@@ -117,8 +124,7 @@ def mapa():
         archivos = borrar_archivos(archivos)
 
         print("Dentro del if")
-        uploads = os.path.join(current_app.root_path, current_app.config["UPLOAD_PATH"])
-        generador.guardar_mapa(uploads, "mapa_usuario", mapa_generado)
+        mapa_final = mapa_generado
         mapa_generado.get_root().width = "800em"  # "800px"
         mapa_generado.get_root().height = "600em"  # "600px"
         print("Cambio de dimensiones listo")
@@ -149,15 +155,27 @@ def error_geometria():
     return render_template("error_geometria.html")
 
 
-@views.route("/uploads/<path:archivo>", methods=["GET", "POST"])
-def descargar_mapa(archivo):
+@views.route("/uploads/<archivo>/<formato>", methods=["GET", "POST"])
+def descargar_mapa(archivo, formato):
+    global mapa_final
     # secure_filename previene que el usuario suba un archivo cuyo nombre
     # sea una ruta relativa y sobreescriba un archivo importante
     archivo = secure_filename(str(archivo))
     # Agregar carpeta raíz a la ruta de "uploads"
     uploads = os.path.join(current_app.root_path, current_app.config["UPLOAD_PATH"])
     print(uploads)
+    print(formato)
+
+    if formato == "html":
+        GeneradorMapas.guardar_mapa(uploads, archivo, mapa_final)
+        archivo = archivo + ".html"
+    elif formato == "png":
+        convertir_mapa_png(mapa_final, archivo, uploads)
+        archivo = archivo + ".png"
+    else:
+        print("ERROR: Formato no soportado")
+
     # Devolver archivo de la ruta uploads
     return send_from_directory(
-        directory=uploads, path=archivo, as_attachment=True, download_name="mapa.html"
+        directory=uploads, path=archivo, as_attachment=True, download_name=archivo
     )
