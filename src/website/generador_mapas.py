@@ -3,7 +3,7 @@ El módulo generador mapas provee las clases necesarias
 para crear mapas interactivos (folium.Map) a partir de 
 archivos shp y todos los archivos complementarios.
 """
-
+import os.path
 from typing import Optional, Union, Any
 import geopandas as gpd
 import folium
@@ -463,7 +463,7 @@ class GeneradorMapas:
         generado en la ruta indicada
         Opciones de formato disponibles:
         """
-        mapa.save(f"{ruta}/{nombre}.html")
+        mapa.save(os.path.join(ruta, f"{nombre}.html"))
 
     @staticmethod
     def obtener_mapa_html(mapa: folium.Map) -> Any:

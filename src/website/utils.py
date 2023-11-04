@@ -1,5 +1,9 @@
+import pdfkit
+import fitz
 import os
 from flask import current_app
+from PIL import Image
+from html2image import Html2Image
 
 
 def borrar_archivos(archivos: list[str]) -> list[str]:
@@ -52,3 +56,10 @@ def archivos_obligatorios(archivos: list[str]) -> str:
         return "Se necesita un archivo con extensión .prj"
 
     return ""
+
+
+def convertir_mapa_png(mapa, nombre_imagen, ruta):
+    hti = Html2Image(output_path=ruta, size=(800, 600))
+    hti.screenshot(
+        html_str=mapa.get_root()._repr_html_(), save_as=f"{nombre_imagen}.png"
+    )
