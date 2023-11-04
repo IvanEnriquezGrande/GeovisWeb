@@ -6,6 +6,7 @@ from flask import (
     flash,
     url_for,
     redirect,
+    send_from_directory,
 )
 from werkzeug.utils import secure_filename
 import os
@@ -38,12 +39,13 @@ def upload_file():
     global ruta_templates
 
     # Revisar si hay archivos en current_app.config["UPLOAD_PATH"]
-    archivos_uploads = os.listdir(current_app.config["UPLOAD_PATH"])
+    uploads = os.path.join(current_app.root_path, current_app.config["UPLOAD_PATH"])
+    archivos_uploads = os.listdir(uploads)
     if len(archivos_uploads) != 0:
         print("Borrar archivos en uploads/test1")
         print(archivos_uploads)
         for archivo in archivos_uploads:
-            os.remove(os.path.join(current_app.config["UPLOAD_PATH"], archivo))
+            os.remove(os.path.join(uploads, archivo))
 
         # Hay vaciar la lista archivos, caso contrario ocurre un error
         archivos = []
@@ -61,13 +63,11 @@ def upload_file():
                 # buscar archivo con extension .shp
                 if str(file.filename).endswith(".shp"):
                     archivo_shp = str(file.filename)
-                    ruta_shp = os.path.join(
-                        current_app.config["UPLOAD_PATH"], archivo_shp
-                    )
+                    ruta_shp = os.path.join(uploads, archivo_shp)
                 # secure_filename previene que el usuario suba un archivo cuyo nombre
                 # sea una ruta relativa y sobreescriba un archivo importante
                 filename = secure_filename(str(file.filename))
-                file.save(os.path.join(current_app.config["UPLOAD_PATH"], filename))
+                file.save(os.path.join(uploads, filename))
                 # guardar archivo en la lista de archivos
                 archivos.append(file.filename)
             else:
@@ -117,10 +117,10 @@ def mapa():
         archivos = borrar_archivos(archivos)
 
         print("Dentro del if")
-
-        # generador.guardar_mapa(ruta_templates, "mapa1", mapa)
-        mapa_generado.get_root().width = "800px"
-        mapa_generado.get_root().height = "600px"
+        uploads = os.path.join(current_app.root_path, current_app.config["UPLOAD_PATH"])
+        generador.guardar_mapa(uploads, "mapa_usuario", mapa_generado)
+        mapa_generado.get_root().width = "800em"  # "800px"
+        mapa_generado.get_root().height = "600em"  # "600px"
         print("Cambio de dimensiones listo")
         iframe = mapa_generado.get_root()._repr_html_()
 
@@ -147,3 +147,17 @@ def error_geometria():
     global archivos
     archivos = borrar_archivos(archivos)
     return render_template("error_geometria.html")
+
+
+@views.route("/uploads/<path:archivo>", methods=["GET", "POST"])
+def descargar_mapa(archivo):
+    # secure_filename previene que el usuario suba un archivo cuyo nombre
+    # sea una ruta relativa y sobreescriba un archivo importante
+    archivo = secure_filename(str(archivo))
+    # Agregar carpeta raíz a la ruta de "uploads"
+    uploads = os.path.join(current_app.root_path, current_app.config["UPLOAD_PATH"])
+    print(uploads)
+    # Devolver archivo de la ruta uploads
+    return send_from_directory(
+        directory=uploads, path=archivo, as_attachment=True, download_name="mapa.html"
+    )
