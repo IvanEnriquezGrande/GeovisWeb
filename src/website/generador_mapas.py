@@ -100,6 +100,7 @@ class GeneradorMapas:
         datos = datos.to_crs(epsg=self._CRS)  # Convertir datos a CRS 6365
 
         for col in datos.columns:
+            print(f"{col}:{datos[col].dtype}")
             if (
                 datos[col].dtype == "object"
             ):  # Verificar si la columna es de tipo string
