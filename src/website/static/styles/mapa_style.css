@@ -17,3 +17,9 @@
 .descargar {
     padding: 20px 20px 20px 0;
 }
+
+.graficas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Dos columnas */
+    grid-gap: 20px; /* Espacio entre las gráficas */
+}

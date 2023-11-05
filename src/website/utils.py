@@ -1,8 +1,9 @@
-import pdfkit
-import fitz
+import folium
+import geopandas as gpd
+import numpy as np
 import os
+
 from flask import current_app
-from PIL import Image
 from html2image import Html2Image
 
 
@@ -58,8 +59,38 @@ def archivos_obligatorios(archivos: list[str]) -> str:
     return ""
 
 
-def convertir_mapa_png(mapa, nombre_imagen, ruta):
+def convertir_mapa_png(mapa: folium.Map, nombre_imagen: str, ruta: str):
     hti = Html2Image(output_path=ruta, size=(800, 600))
     hti.screenshot(
         html_str=mapa.get_root()._repr_html_(), save_as=f"{nombre_imagen}.png"
     )
+
+
+def generar_datos_graficas(datos: gpd.GeoDataFrame) -> dict:
+    """
+    Crea un diccionario con los datos necesarios
+    para realizar los gráficos con chart.js.
+    """
+    datos_graficas = {}
+    for columna, contenido in datos.items():
+        dict_temp = {}
+        if contenido.dtype == "object":
+            conteo = contenido.value_counts()
+            dict_temp = {
+                "etiquetas": conteo.index.tolist(),
+                "cantidades": conteo.values.tolist(),
+                "tipo": "pastel",
+            }
+        elif contenido.dtype == "float64":
+            bins, bordes = np.histogram(contenido.to_numpy(), bins="auto")
+            dict_temp = {
+                "etiquetas": bordes.tolist(),
+                "cantidades": bins.tolist(),
+                "tipo": "histograma",
+            }
+        else:
+            print("FORMATO NO VÁLIDO")
+
+        datos_graficas[str(columna).lower()] = dict_temp
+
+    return datos_graficas

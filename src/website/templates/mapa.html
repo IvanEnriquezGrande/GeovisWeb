@@ -5,6 +5,8 @@
     <link href='https://unpkg.com/gridjs/dist/theme/mermaid.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
     <script src="https://unpkg.com/gridjs/l10n/dist/l10n.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
 {% endblock %}
 {% block content %}
     <div class="mapa-container">
@@ -39,6 +41,8 @@
                         return nuevoDato
                     })
 
+                    console.log(datosLimpios)
+
                     new gridjs.Grid({
                         columns: columnas,
                         data: datosLimpios,
@@ -65,4 +69,78 @@
             </script>
         {% endblock %}
     </div>
+
+    <div class="graficas-grid" id="graficas-container"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const datos_graficas = JSON.parse('{{ datos_graficas | tojson | safe}}')
+            console.log(datos_graficas)
+
+            const graficasContainer = document.getElementById('graficas-container');
+
+            const paletaColores = {
+                scheme: 'brewer.Paired12' // Cambia 'Paired12' a la paleta de tu elección
+            };
+
+            for (let columna in datos_graficas) {
+                let div = document.createElement('div');
+                let canvas = document.createElement('canvas');
+                canvas.id = columna; // Asigna el id igual a la columna
+                div.appendChild(canvas);
+                graficasContainer.appendChild(div);
+
+                // Crea la gráfica de barras para cada columna
+                let ctx = document.getElementById(columna).getContext('2d');
+                if (datos_graficas[columna].tipo === "pastel") {
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: datos_graficas[columna].etiquetas,
+                            datasets: [{
+                                data: datos_graficas[columna].cantidades,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            // Aplica la paleta de colores
+                            plugins: {
+                                colorschemes: {
+                                    scheme: paletaColores.scheme
+                                },
+                                title: {
+                                    display: true,
+                                    text: columna
+                                }
+                            }
+                        },
+                    });
+                } else if (datos_graficas[columna].tipo === "histograma") {
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: datos_graficas[columna].etiquetas,
+                            datasets: [{
+                                label: columna,
+                                data: datos_graficas[columna].cantidades,
+                                borderWidth: 1,
+                                barPercentage: 1,
+                                categoryPercentage: 1,
+                                borderRadius: 5,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            // Aplica la paleta de colores
+                            plugins: {
+                                colorschemes: {
+                                    scheme: paletaColores.scheme
+                                }
+                            }
+                        },
+                    });
+                }
+            }
+        });
+        </script>
 {% endblock %}

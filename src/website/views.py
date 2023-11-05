@@ -16,6 +16,7 @@ from .utils import (
     archivos_obligatorios,
     extensiones_validas,
     convertir_mapa_png,
+    generar_datos_graficas,
 )
 
 views = Blueprint("views", __name__)
@@ -132,17 +133,20 @@ def mapa():
 
         datos2 = datos.drop(columns=["geometry"])
         datos_tabla = datos2.to_dict(orient="records")
+        datos_graficas = generar_datos_graficas(datos2)
         columnas = datos2.columns
         columnas_tabla = [{"id": col.lower(), "name": col} for col in columnas]
         print(datos.drop(columns=["geometry"]).columns)
         print(len(datos_tabla))
         print(columnas_tabla)
+        print(datos_graficas)
 
         return render_template(
             "mapa.html",
             iframe=iframe,
             datos_tabla=datos_tabla,
             columnas_tabla=columnas_tabla,
+            datos_graficas=datos_graficas,
         )
     else:
         return redirect(url_for("views.error_geometria"))
