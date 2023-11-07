@@ -13,15 +13,22 @@
         <div class="mapa">
             {% block mapa %}{{ iframe|safe }}{% endblock %}
         </div>
-        <div class="descargar">
-            <div class="dropdown">
-              <button class="btn btn-lg btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                Descargar mapa
-              </button>
-              <div class="dropdown-menu">
-                <a class="dropdown-item" href="{{ url_for('views.descargar_mapa', archivo='mapa_generado', formato='html') }}">Como HTML</a>
-                <a class="dropdown-item" href="{{ url_for('views.descargar_mapa', archivo='mapa_generado', formato='png') }}">Como PNG</a>
-              </div>
+        <div class="flex-wrapper">
+            <div class="descargar">
+                <div class="dropdown">
+                  <button class="btn btn-lg btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                    Descargar mapa
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ url_for('views.descargar_mapa', archivo='mapa_generado', formato='html') }}">Como HTML</a>
+                    <a class="dropdown-item" href="{{ url_for('views.descargar_mapa', archivo='mapa_generado', formato='png') }}">Como PNG</a>
+                  </div>
+                </div>
+            </div>
+            <div class="descargar-reporte">
+                <a class="btn btn-lg btn-secondary" href="{{ url_for('views.descargar_reporte', archivo='datos') }}">
+                    Descargar reporte
+                </a>
             </div>
         </div>
     </div>
