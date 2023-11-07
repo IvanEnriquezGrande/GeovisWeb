@@ -26,6 +26,7 @@ archivo_shp = ""  # nombre del shp
 ruta_shp = ""  # ubicación del shp
 ruta_templates = ".\\website\\templates"
 mapa_final = None
+datos_finales = None
 
 
 @views.route("/")
@@ -112,6 +113,7 @@ def crear_mapa_success():
 def mapa():
     global archivos
     global mapa_final
+    global datos_finales
     generador = GeneradorMapas()
     print("Obteniendo datos de " + ruta_shp)
     datos = generador.obtener_datos(ruta_shp)
@@ -132,6 +134,7 @@ def mapa():
         iframe = mapa_generado.get_root()._repr_html_()
 
         datos2 = datos.drop(columns=["geometry"])
+        datos_finales = datos2
         datos_tabla = datos2.to_dict(orient="records")
         datos_graficas = generar_datos_graficas(datos2)
         columnas = datos2.columns
@@ -178,6 +181,27 @@ def descargar_mapa(archivo, formato):
         archivo = archivo + ".png"
     else:
         print("ERROR: Formato no soportado")
+
+    # Devolver archivo de la ruta uploads
+    return send_from_directory(
+        directory=uploads, path=archivo, as_attachment=True, download_name=archivo
+    )
+
+
+@views.route("/uploads/<archivo>", methods=["GET", "POST"])
+def descargar_reporte(archivo):
+    global datos_finales
+    # secure_filename previene que el usuario suba un archivo cuyo nombre
+    # sea una ruta relativa y sobreescriba un archivo importante
+    archivo = secure_filename(str(archivo))
+    archivo = archivo + ".xlsx"
+    # Agregar carpeta raíz a la ruta de "uploads"
+    uploads = os.path.join(current_app.root_path, current_app.config["UPLOAD_PATH"])
+    print(uploads)
+
+    datos_finales.to_excel(
+        os.path.join(uploads, archivo), sheet_name="Hoja1", index=False
+    )
 
     # Devolver archivo de la ruta uploads
     return send_from_directory(
