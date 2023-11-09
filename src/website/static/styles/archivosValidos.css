@@ -1,0 +1,82 @@
+.grid-container {
+    display: grid;
+    grid-template-rows: auto; /* Filas se ajustan automáticamente a la altura del contenido */
+    gap: 10px; /* Espacio entre los elementos */
+}
+.grid-item {
+    text-align: center;
+}
+
+.container-2 {
+  display: flex; /* Establece el contenedor como flexbox */
+max-width: 1024px;
+}
+
+.column {
+  flex: 1; /* Hace que ambas columnas ocupen el mismo espacio disponible */
+  padding-top: 10px; /* Padding en la parte superior */
+  padding-bottom: 10px;
+  border: 1px ;
+}
+
+.column > h1{
+  padding-top: 6rem;
+  text-align: left;
+}
+
+form{
+  position: absolute;
+  top: auto;
+  left: 35%;
+  margin-left: -250px;
+}
+form p{
+  width: 100%;
+  height: 100%;
+  text-align: center;  
+  font-family: Arial;
+}
+
+.button {
+  margin-top: auto;
+min-height: 42px;
+min-width: 100px;
+padding: 0 14px;
+color: white;
+background-color: #0074E4;
+border-color: #0074E4;
+position: relative;
+display: inline-flex;
+justify-content: center;
+align-items: center;
+flex: 0 0 auto;
+border-radius: 4px;
+border: 2px solid;
+border-color: transparent;
+font-weight: 500;
+line-height: 1;
+user-select: none;
+touch-action: manipulation;
+box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+.button:focus {
+background-color: #ed4410;
+border-color: #ed4410;
+}
+.button:hover {
+background-color: #ed4410;
+border-color: #ed4410;
+}
+.button:active {
+background-color: #d03c0e;
+border-color: #d03c0e;
+}
+.button.button-outlined {
+color: #F1592A;
+border-color: currentColor;
+}
+
+.grid-item img {
+  margin-left: auto; /* Mueve la imagen a la derecha (alinea a la derecha) */
+  display: block; /* Evita que la imagen afecte el espacio verticalmente */
+}
